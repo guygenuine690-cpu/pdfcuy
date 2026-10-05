@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Free PDF and Office tools that keep nothing. Convert, merge, split, compress, encrypt. Processed in memory, never stored.">
+<title>PDFCUY - PDF &amp; Office Tools That Store Nothing</title>
+<link rel="stylesheet" href="/static/app.css">
+<link rel="stylesheet" href="/static/work.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234f46e5'/><path d='M10 9.5h8l4 4v9.5h-12z' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linejoin='round'/><path d='M13 17h6M13 20h4' stroke='%23fff' stroke-width='1.8' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<header class="top">
+  <div class="topin">
+    <a class="brand" href="#" id="home">
+      <span class="m" id="mark" aria-hidden="true"></span>
+      <span class="n"><b><span class="w1">PDF</span><span class="w2">CUY</span></b></span>
+    </a>
+    <nav class="tnav" id="tnav" aria-label="Tool categories"></nav>
+    <span class="tend">
+      <span class="pill" id="engine" title="Processing engine"><span class="dot"></span><span>In-memory</span></span>
+      <button class="iconbtn" id="theme" type="button" aria-label="Switch theme"></button>
+    </span>
+  </div>
+</header>
+
+<main>
+
+  <!-- == library == -->
+  <div class="view" id="library">
+    <section class="hero">
+      <span class="kick" id="kick">Nothing stored, nothing logged</span>
+      <h1>Every document tool you need.<br><em>None of the tracking.</em></h1>
+      <p>Pick a tool, drop your file, get the result. Your document is processed in memory
+         and discarded the moment it is sent back.</p>
+      <div class="trust" id="trust"></div>
+      <div class="find">
+        <span class="si" id="searchic" aria-hidden="true"></span>
+        <input id="q" type="text" placeholder="Search tools, formats or tasks" aria-label="Search tools" autocomplete="off" spellcheck="false">
+        <kbd>/</kbd>
+      </div>
+    </section>
+    <div id="sections"></div>
+  </div>
+
+  <!-- == workspace == -->
+  <div class="view" id="workspace" hidden>
+    <nav class="crumb" aria-label="Breadcrumb">
+      <button type="button" id="back"><span id="backic" aria-hidden="true"></span>All tools</button>
+      <span class="sep" aria-hidden="true">/</span>
+      <span id="crumbcat"></span>
+      <span class="sep" aria-hidden="true">/</span>
+      <span class="now" id="crumbnow"></span>
+    </nav>
+
+    <div class="wshead" id="wshead">
+      <span class="tile" id="wtile" aria-hidden="true"></span>
+      <span class="tx">
+        <h2 id="wtitle"></h2>
+        <p id="wdesc"></p>
+      </span>
+    </div>
+
+    <div class="work">
+      <div>
+        <section class="panel" id="filepanel" aria-labelledby="fph">
+          <h3 id="fph">
+            <span id="fphic" aria-hidden="true"></span>Your files
+            <span class="n" id="fcount"></span>
+          </h3>
+          <div class="pin" id="dropwrap">
+            <button class="drop" id="drop" type="button">
+              <span class="du" id="dropic" aria-hidden="true"></span>
+              <strong id="droptitle">Drop your file here</strong>
+              <span class="sub" id="dropsub"></span>
+              <span class="cta"><span id="ctaic" aria-hidden="true"></span>Choose file</span>
+              <span class="accepts" id="accepts"></span>
+            </button>
+          </div>
+          <ul class="flist" id="flist"></ul>
+          <button class="addmore" id="addmore" type="button" hidden>
+            <span id="addic" aria-hidden="true"></span>Add more files
+          </button>
+          <input type="file" id="picker" multiple hidden>
+          <div class="xwrap" id="extrawrap" hidden></div>
+        </section>
+
+        <section class="panel gap-t" id="optpanel" aria-labelledby="oph" hidden>
+          <h3 id="oph"><span id="ophic" aria-hidden="true"></span>Settings</h3>
+          <div class="pin">
+            <div class="opts" id="opts"></div>
+            <button class="adv gap-t" id="advbtn" type="button" aria-expanded="false" hidden>
+              <span id="advic" aria-hidden="true"></span><span id="advtxt">More options</span>
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side">
+        <section class="panel" aria-labelledby="rph">
+          <h3 id="rph"><span id="rphic" aria-hidden="true"></span>Run</h3>
+          <div class="pin">
+            <div class="sum" id="sum"></div>
+            <button class="go gap-t" id="go" type="button" disabled>
+              <span id="goic" aria-hidden="true"></span><span id="gotxt">Run</span>
+            </button>
+            <div class="bar gap-s" id="bar" hidden aria-hidden="true"><i></i></div>
+            <div id="notewrap" class="gap-s" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <div class="priv">
+          <span class="ph"><span id="privic" aria-hidden="true"></span>How this stays private</span>
+          <ul id="privlist"></ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="fin">
+    <div class="fcol">
+      <h4 class="fbrand"><span class="w1">PDF</span><span class="w2">CUY</span></h4>
+      <p>Document tools built the way they should be: your file enters memory, gets processed,
+         and is gone before the response finishes. No account, no cookie, no log line.</p>
+    </div>
+    <div class="fcol"><h4>Convert</h4><ul id="fconvert"></ul></div>
+    <div class="fcol"><h4>Organize</h4><ul id="fedit"></ul></div>
+    <div class="fcol">
+      <h4>Good to know</h4>
+      <ul>
+        <li>Up to <code id="fmax">100 MB</code> per job</li>
+        <li>No OCR on scanned pages</li>
+        <li>Open source dependencies</li>
+        <li id="flegacy" hidden>Legacy <code>.doc</code> needs LibreOffice</li>
+      </ul>
+    </div>
+  </div>
+  <div class="fbot">Run it yourself behind HTTPS. Nothing here phones home.</div>
+</footer>
+
+<script type="module" src="/static/main.js"></script>
+</body>
+</html>

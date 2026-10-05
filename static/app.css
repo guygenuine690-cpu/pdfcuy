@@ -1,0 +1,266 @@
+/* PDFCUY - tool-first bento grid. Rich surfaces, colored tool tiles, WCAG AA.
+   Per ui-ux-pro-max: Bento Grid + Feature-Rich Showcase. radius 16-24, hover lift, soft shadow. */
+*,*::before,*::after{box-sizing:border-box}
+
+:root{
+  /* spacing */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:28px;
+  --s7:40px; --s8:56px; --s9:80px;
+
+  /* type */
+  --t1:11.5px; --t2:13px; --t3:14px; --t4:15.5px; --t5:18px;
+  --t6:22px; --t7:30px; --t8:42px;
+
+  /* radius */
+  --rc:20px;  --rt:16px;  --ri:14px;  --rs:10px;  --rf:999px;
+
+  /* surface */
+  --page:#f4f5fa;
+  --page-2:#eceef7;
+  --card:#ffffff;
+  --soft:#f3f4f9;
+  --soft-2:#e9ebf4;
+  --line:#e4e7f0;
+  --line-2:#ccd2e2;
+
+  /* ink */
+  --ink:#14161f;
+  --ink-2:#565e73;
+  --ink-3:#848da4;
+
+  /* brand */
+  --br:#4f46e5;
+  --br-2:#6d5ef0;
+  --br-soft:#eef0fe;
+  --br-ink:#ffffff;
+
+  /* category hues: 1 convert 2 edit 3 optimize 4 secure */
+  --c1:#2563eb; --c1s:#e8efff;
+  --c2:#c2410c; --c2s:#fdeee4;
+  --c3:#047857; --c3s:#e2f6ee;
+  --c4:#be185d; --c4s:#fdeaf2;
+
+  --ok:#047857; --ok-s:#e2f6ee;
+  --err:#be1f1f; --err-s:#fdeaea;
+  --warn:#9a5b00; --warn-s:#fdf2e0;
+
+  /* elevation */
+  --e1:0 1px 2px rgba(20,22,31,.05);
+  --e2:0 2px 4px rgba(20,22,31,.05),0 6px 16px rgba(20,22,31,.05);
+  --e3:0 8px 20px rgba(20,22,31,.09),0 2px 6px rgba(20,22,31,.05);
+  --e4:0 18px 48px rgba(20,22,31,.13);
+
+  --ease:cubic-bezier(.22,.72,.26,1);
+  --t:180ms var(--ease);
+  --sans:"Plus Jakarta Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --wrap:1140px;
+}
+
+[data-theme="dark"]{
+  --page:#0b0d14;
+  --page-2:#10131c;
+  --card:#161a25;
+  --soft:#1d2230;
+  --soft-2:#252b3b;
+  --line:#272d3d;
+  --line-2:#394157;
+
+  --ink:#edeff6;
+  --ink-2:#a8b0c4;
+  --ink-3:#7c8499;
+
+  --br:#8b84f8; --br-2:#a79ffb; --br-soft:#1e2039; --br-ink:#0b0d14;
+
+  --c1:#7aa6ff; --c1s:#16213c;
+  --c2:#f59e63; --c2s:#2e1d12;
+  --c3:#4fc996; --c3s:#0f2a21;
+  --c4:#f4719f; --c4s:#2e1423;
+
+  --ok:#4fc996; --ok-s:#0f2a21;
+  --err:#f4756f; --err-s:#2d1515;
+  --warn:#dfa24a; --warn-s:#2a1f0d;
+
+  --e1:0 1px 2px rgba(0,0,0,.4);
+  --e2:0 2px 6px rgba(0,0,0,.4),0 8px 20px rgba(0,0,0,.3);
+  --e3:0 10px 26px rgba(0,0,0,.5);
+  --e4:0 20px 56px rgba(0,0,0,.6);
+}
+
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  margin:0;min-height:100dvh;background:var(--page);color:var(--ink);
+  font:var(--t3)/1.6 var(--sans);-webkit-font-smoothing:antialiased;
+  overflow-wrap:break-word;
+}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+:focus-visible{outline:2.5px solid var(--br);outline-offset:2px;border-radius:var(--rs)}
+svg{display:block}
+
+/* ========== header ========== */
+.top{
+  position:sticky;top:0;z-index:40;
+  background:color-mix(in srgb,var(--page) 86%,transparent);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(14px) saturate(1.3);
+  -webkit-backdrop-filter:blur(14px) saturate(1.3);
+}
+@supports not (backdrop-filter:blur(1px)){.top{background:var(--page)}}
+/* Three tracks with equal outer columns, so the category nav sits on the real
+   centre of the page instead of wherever the brand and controls leave room.
+   Flex with spacers cannot do this: the two sides have different widths, so
+   the nav drifts off-centre by half that difference. */
+.topin{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  gap:var(--s4);max-width:var(--wrap);margin:0 auto;padding:var(--s3) var(--s5)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;
+  flex:none;justify-self:start}
+.brand .m{width:32px;height:32px;flex:none;border-radius:var(--rs);
+  background:linear-gradient(135deg,var(--br-2),var(--br));color:var(--br-ink);
+  display:grid;place-items:center;box-shadow:var(--e2)}
+.brand .m svg{width:18px;height:18px}
+.brand .n{display:flex;align-items:center;line-height:1}
+/* "PDFCUY" splits into PDF + CUY, so the wordmark leans on that instead of
+   sitting as one flat run. All-caps needs the opposite tracking to lowercase:
+   negative spacing jams the stems of adjacent capitals together. */
+.brand b{font-size:var(--t4);font-weight:700;letter-spacing:.045em}
+.brand b .w1{color:var(--ink)}
+.brand b .w2{color:var(--br)}
+
+.tend{display:flex;align-items:center;gap:var(--s3);justify-self:end}
+.tnav{display:flex;gap:2px;justify-self:center}
+.tnav a{padding:7px var(--s3);border-radius:var(--rs);text-decoration:none;
+  color:var(--ink-2);font-size:var(--t2);font-weight:600;transition:var(--t)}
+.tnav a:hover{color:var(--ink);background:var(--soft)}
+.tnav a.on{color:var(--br);background:var(--br-soft)}
+/* Below 900px the nav is hidden, so the middle track has nothing in it. Drop
+   back to two columns there or the brand sits a third of the way across. */
+@media (max-width:900px){
+  .tnav{display:none}
+  .topin{grid-template-columns:1fr auto}
+}
+
+.iconbtn{width:34px;height:34px;flex:none;display:grid;place-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--rs);
+  color:var(--ink-2);cursor:pointer;transition:var(--t);box-shadow:var(--e1)}
+.iconbtn:hover{color:var(--ink);border-color:var(--line-2);transform:translateY(-1px);box-shadow:var(--e2)}
+.iconbtn svg{width:16px;height:16px}
+
+.pill{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;
+  border-radius:var(--rf);background:var(--ok-s);color:var(--ok);
+  font-size:var(--t1);font-weight:700;letter-spacing:.01em;white-space:nowrap}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:currentColor;
+  box-shadow:0 0 0 3px color-mix(in srgb,currentColor 22%,transparent)}
+@media (max-width:620px){.pill span{display:none}}
+
+/* ========== layout ========== */
+main{max-width:var(--wrap);margin:0 auto;padding:var(--s7) var(--s5) var(--s9)}
+.view[hidden]{display:none}
+
+/* ========== hero ========== */
+.hero{text-align:center;max-width:720px;margin:0 auto var(--s7)}
+.kick{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;margin-bottom:var(--s4);
+  border-radius:var(--rf);background:var(--card);border:1px solid var(--line);
+  box-shadow:var(--e1);font-size:var(--t1);font-weight:700;color:var(--ink-2);
+  letter-spacing:.04em;text-transform:uppercase}
+.kick svg{width:13px;height:13px;color:var(--br)}
+h1{margin:0 0 var(--s4);font-size:var(--t8);font-weight:800;letter-spacing:-.035em;line-height:1.08}
+h1 em{font-style:normal;background:linear-gradient(100deg,var(--br-2),var(--c4));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hero>p{margin:0 auto;max-width:560px;font-size:var(--t5);color:var(--ink-2);line-height:1.55}
+
+.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s2) var(--s5);margin-top:var(--s5)}
+.trust span{display:inline-flex;align-items:center;gap:7px;font-size:var(--t2);
+  font-weight:600;color:var(--ink-2)}
+.trust svg{width:15px;height:15px;color:var(--ok);flex:none}
+
+/* search */
+.find{position:relative;max-width:520px;margin:var(--s6) auto 0}
+.find .si{position:absolute;left:15px;top:50%;transform:translateY(-50%);
+  width:17px;height:17px;color:var(--ink-3);pointer-events:none}
+.find input{width:100%;height:50px;padding:0 var(--s8) 0 44px;font:inherit;font-size:var(--t4);
+  color:var(--ink);background:var(--card);border:1px solid var(--line);
+  border-radius:var(--rf);box-shadow:var(--e2);transition:var(--t)}
+.find input::placeholder{color:var(--ink-3)}
+.find input:hover{border-color:var(--line-2)}
+.find input:focus{outline:none;border-color:var(--br);
+  box-shadow:var(--e2),0 0 0 4px var(--br-soft)}
+.find kbd{position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:11px;color:var(--ink-3);
+  background:var(--soft);border:1px solid var(--line);border-bottom-width:2px;
+  border-radius:6px;padding:2px 7px;pointer-events:none}
+.find input:not(:placeholder-shown)~kbd{opacity:0}
+
+/* ========== sections ========== */
+.sec{margin-top:var(--s8);scroll-margin-top:84px}
+.sec:first-of-type{margin-top:var(--s7)}
+.shead{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s5)}
+.shead .sic{width:36px;height:36px;flex:none;display:grid;place-items:center;
+  border-radius:var(--ri);background:var(--cs);color:var(--c)}
+.shead .sic svg{width:18px;height:18px}
+.shead .st{flex:1;min-width:0}
+.shead h2{margin:0;font-size:var(--t6);font-weight:750;letter-spacing:-.025em;line-height:1.2}
+.shead p{margin:1px 0 0;font-size:var(--t2);color:var(--ink-3)}
+.shead .cnt{font-family:var(--mono);font-size:var(--t1);color:var(--ink-3);
+  background:var(--soft);border:1px solid var(--line);border-radius:var(--rf);
+  padding:3px 10px;flex:none;font-weight:600}
+
+/* ========== tool grid (bento) ========== */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4)}
+@media (max-width:1080px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:860px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:540px){.grid{grid-template-columns:1fr;gap:var(--s3)}}
+
+/* per-category hue, applied by class so no inline style is needed (strict CSP) */
+.k1{--c:var(--c1);--cs:var(--c1s)}
+.k2{--c:var(--c2);--cs:var(--c2s)}
+.k3{--c:var(--c3);--cs:var(--c3s)}
+.k4{--c:var(--c4);--cs:var(--c4s)}
+
+.tool{
+  position:relative;display:flex;flex-direction:column;align-items:flex-start;
+  gap:var(--s3);padding:var(--s5);min-height:188px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--rc);
+  box-shadow:var(--e1);text-align:left;color:inherit;font:inherit;cursor:pointer;
+  transition:transform var(--t),box-shadow var(--t),border-color var(--t);
+  overflow:hidden;
+}
+.tool::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(130% 90% at 100% 0,var(--cs),transparent 62%);
+  opacity:0;transition:opacity var(--t)}
+.tool:hover{transform:translateY(-4px);box-shadow:var(--e3);border-color:var(--c)}
+.tool:hover::after{opacity:1}
+.tool:active{transform:translateY(-1px)}
+.tool.feat{grid-column:span 2}
+@media (max-width:540px){.tool.feat{grid-column:span 1}}
+
+.tool .tile{position:relative;z-index:1;width:46px;height:46px;flex:none;display:grid;place-items:center;
+  border-radius:var(--rt);background:var(--cs);color:var(--c);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 14%,transparent);
+  transition:var(--t)}
+.tool .tile svg{width:23px;height:23px}
+.tool:hover .tile{background:var(--c);color:var(--card);transform:scale(1.06) rotate(-3deg)}
+
+.tool h3{position:relative;z-index:1;margin:0;font-size:var(--t4);font-weight:700;
+  letter-spacing:-.015em;line-height:1.25}
+.tool p{position:relative;z-index:1;margin:0;flex:1;font-size:var(--t2);
+  color:var(--ink-2);line-height:1.5}
+
+.flow{position:relative;z-index:1;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.flow .lg{width:22px;height:22px;flex:none;border-radius:5px;overflow:hidden;box-shadow:var(--e1)}
+.flow .lg svg{width:100%;height:100%}
+.flow .ar{width:13px;height:13px;color:var(--ink-3);flex:none}
+.flow .tag{font-size:10.5px;font-weight:700;color:var(--ink-3);letter-spacing:.05em;
+  text-transform:uppercase;background:var(--soft);border-radius:5px;padding:3px 7px}
+
+.badge{position:absolute;top:var(--s4);right:var(--s4);z-index:2;
+  font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:var(--rf);background:var(--c);color:var(--card)}
+
+.empty{grid-column:1/-1;padding:var(--s9) var(--s5);text-align:center;
+  background:var(--card);border:1px dashed var(--line-2);border-radius:var(--rc)}
+.empty .eic{width:46px;height:46px;margin:0 auto var(--s4);display:grid;place-items:center;
+  border-radius:var(--ri);background:var(--soft);color:var(--ink-3)}
+.empty .eic svg{width:22px;height:22px}
+.empty b{display:block;font-size:var(--t4);font-weight:700}
+.empty span{display:block;margin-top:4px;font-size:var(--t2);color:var(--ink-3)}
