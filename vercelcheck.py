@@ -6,6 +6,7 @@ asserted here instead of being discovered in a deployment log.
 import io
 import json
 import os
+import re
 import sys
 
 os.environ["VERCEL"] = "1"            # mimic the platform
@@ -76,6 +77,26 @@ chk("no server banner", "server" not in {k.lower() for k in r.headers})
 print("\nthe bundle leaves out what will not fit")
 req = io.open(os.path.join("api", "requirements.txt"), encoding="utf-8").read()
 chk("pdf2docx excluded from the deployment bundle", "pdf2docx" not in req)
+
+# Every dependency that app.py imports at module scope must be installable in
+# the function, or the import fails and every route answers 500. FastAPI pulls
+# python-multipart in only when forms are used, and it is not a declared
+# dependency, so a requirements file that omits it passes locally (where it is
+# already present) and dies on deploy. That is exactly the bug this catches.
+src = io.open("app.py", encoding="utf-8").read()
+DIST = {
+    "fitz": "pymupdf", "PIL": "pillow", "docx": "python-docx",
+    "pptx": "python-pptx", "openpyxl": "openpyxl", "reportlab": "reportlab",
+    "pdfplumber": "pdfplumber", "fastapi": "fastapi",
+}
+low = req.lower()
+for mod, dist in DIST.items():
+    if re.search(rf"^(?:import {mod}\b|from {mod}\b)", src, re.M):
+        chk(f"{dist} declared for {mod}", dist in low, req)
+chk("python-multipart declared (Form and File need it)",
+    "python-multipart" in low,
+    "missing: every upload route would answer 500")
+
 # Locally the converter is installed, so engines reports true here. What must
 # hold is that the flag mirrors reality rather than being hardcoded, and that
 # the endpoint refuses cleanly when it is absent. degradecheck.py drives the
@@ -85,9 +106,19 @@ import importlib.util as iu  # noqa: E402
 have = iu.find_spec("pdf2docx") is not None
 chk("the flag reflects what is actually installed", e["pdf2docx"] == have,
     f"flag {e['pdf2docx']}, installed {have}")
-src = io.open("app.py", encoding="utf-8").read()
 chk("a missing converter is caught", "except ImportError" in src)
 chk("and answers 501 rather than crashing", "501," in src)
+
+print("\ntest files stay out of the function")
+vi = io.open(".vercelignore", encoding="utf-8").read().split()
+suites = [f for f in os.listdir(".")
+          if f.endswith(".py") and (f.endswith("check.py") or f.endswith(
+              "flow.py") or f in ("audit.py", "contrast.py"))]
+missing = [f for f in suites if f not in vi and not f.startswith("_")]
+chk("every suite is ignored", not missing, missing)
+chk("secrets ignored too", ".env" in vi)
+for keep in ["app.py", "office.py"]:
+    chk(f"{keep} is shipped", keep not in vi)
 
 print(f"\n{ok} passed, {fail} failed")
 assert fail == 0, f"{fail} check(s) failed"
