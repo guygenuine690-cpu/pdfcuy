@@ -32,8 +32,15 @@ tracked = [p for p in git("ls-files").splitlines() if p.strip()]
 
 print("the working tree is what was published")
 chk("files are tracked", len(tracked) > 30, len(tracked))
-chk("nothing uncommitted", not git("status", "--porcelain").strip(),
-    git("status", "--porcelain").strip()[:120])
+# Not "the tree is clean": uncommitted work is normal and says nothing about
+# what leaked. What matters is that no secret-shaped file is sitting here
+# waiting to be caught by the next "git add -A".
+untracked = [p for p in git("ls-files", "--others",
+                            "--exclude-standard").splitlines() if p.strip()]
+risky = [p for p in untracked
+         if os.path.basename(p).startswith(".env")
+         or p.endswith((".pem", ".key"))]
+chk("no secret-shaped file is unignored", not risky, risky[:4])
 
 print("\nno credential is in any tracked file")
 # Patterns for things that actually grant access. Generic words like "token"

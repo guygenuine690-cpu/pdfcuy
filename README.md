@@ -211,16 +211,17 @@ python wmflow.py        # 22  watermark logo/tiling and flatten through the brow
 python deploycheck.py   # 19  the Vercel entry point serves the same app and headers
 python vercelcheck.py   # 18  platform config and caps that would fail a build
 python hostcheck.py     # 16  no baked-in host; works under any domain
+python publiccheck.py   # 22  the public repo holds no credential or private path
 python degradecheck.py  # 13  a tool whose backend is absent disappears from the UI
-python countcheck.py    # 22  every count in this table, verified by running them
+python countcheck.py    # 23  every count in this table, verified by running them
 python livecheck.py     #     HTTP smoke test
 python audit.py         #     adversarial sweep, reports findings by severity
 ```
 
-776 checks total. `selfcheck`, `newcheck`, `paritycheck`, `blankcheck`, `seccheck`,
-`namecheck`, `tlscheck`, `seocheck`, `hostcheck`, `contrast`, `emojicheck`, `deploycheck`
-and `vercelcheck` run without a server; the rest need it running. Browser tests need
-`pip install playwright && playwright install chromium`.
+799 checks total. `selfcheck`, `newcheck`, `paritycheck`, `blankcheck`, `seccheck`,
+`namecheck`, `tlscheck`, `seocheck`, `hostcheck`, `publiccheck`, `contrast`, `emojicheck`,
+`deploycheck` and `vercelcheck` run without a server; the rest need it running. Browser
+tests need `pip install playwright && playwright install chromium`.
 
 `seccheck.py` is the one that matters most: it hides a known string in page text, document
 metadata, the XMP packet, an annotation, a link URI and an embedded attachment, then checks
