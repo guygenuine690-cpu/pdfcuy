@@ -197,6 +197,7 @@ python paritycheck.py   # 46  watermark image/tile/angle, flatten, strict page s
 python blankcheck.py    # 39  blank form values, capped errors, reverse ranges
 python seccheck.py      # 38  page/file caps, metadata, XMP and attachment stripping
 python namecheck.py     # 39  filename sanitiser and header encoding (no server needed)
+python tlscheck.py      # 15  HSTS follows the connection, posture intact (no server needed)
 python contrast.py      # 52  WCAG AA across both themes (no server needed)
 python emojicheck.py    # 12  pure-ASCII rule over every byte and the rendered DOM
 python uicheck.py       # 122 assets, tokens, a11y, CSP hygiene, tool parity
@@ -208,14 +209,15 @@ python newflow.py       # 20  the nine newer tools driven through the browser
 python wmflow.py        # 22  watermark logo/tiling and flatten through the browser
 python deploycheck.py   # 15  the Vercel entry point serves the same app and headers
 python degradecheck.py  # 13  a tool whose backend is absent disappears from the UI
-python countcheck.py    # 18  every count in this table, verified by running them
+python countcheck.py    # 19  every count in this table, verified by running them
 python livecheck.py     #     HTTP smoke test
 python audit.py         #     adversarial sweep, reports findings by severity
 ```
 
-698 checks total. `selfcheck`, `newcheck`, `paritycheck`, `blankcheck`, `seccheck`,
-`namecheck`, `contrast`, `emojicheck` and `deploycheck` run without a server; the rest need
-it running. Browser tests need `pip install playwright && playwright install chromium`.
+714 checks total. `selfcheck`, `newcheck`, `paritycheck`, `blankcheck`, `seccheck`,
+`namecheck`, `tlscheck`, `contrast`, `emojicheck` and `deploycheck` run without a server;
+the rest need it running. Browser tests need
+`pip install playwright && playwright install chromium`.
 
 `seccheck.py` is the one that matters most: it hides a known string in page text, document
 metadata, the XMP packet, an annotation, a link URI and an embedded attachment, then checks

@@ -115,6 +115,18 @@ async def security_headers(request, call_next):
     # gives a visitor nothing. Dropped here so it is gone under gunicorn too.
     if "server" in r.headers:
         del r.headers["server"]
+    # HSTS only when the connection already arrived over TLS. Sending it on
+    # plain HTTP is ignored by browsers anyway, and setting it unconditionally
+    # would pin a developer's own machine to https://127.0.0.1, which serves
+    # nothing. The forwarded header is what a terminating proxy reports.
+    tls = (request.url.scheme == "https"
+           or request.headers.get("x-forwarded-proto", "").split(",")[0].strip()
+           == "https")
+    if tls:
+        r.headers.setdefault(
+            "Strict-Transport-Security",
+            "max-age=63072000; includeSubDomains",
+        )
     return r
 
 

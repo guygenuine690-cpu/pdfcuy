@@ -225,6 +225,14 @@ for name, want, sev in [
         note(sev, "header", f"{name} missing" if not got else f"{name} is {got[:50]}")
 
 note("INFO", "header", f"server banner: {h.get('server', 'absent')}")
+# HSTS is deliberately conditional: it is set only when the request arrived
+# over TLS, so a plain-HTTP audit run must not see it. Flag the inverse, which
+# would mean a developer's own machine gets pinned to a scheme it cannot serve.
+if "strict-transport-security" in h:
+    note("MED", "header", "HSTS sent over plain HTTP",
+         h["strict-transport-security"][:60])
+else:
+    note("PASS", "header", "HSTS correctly withheld on plain HTTP")
 if "set-cookie" in h:
     note("HIGH", "privacy", "server sets a cookie", h["set-cookie"][:90])
 else:
