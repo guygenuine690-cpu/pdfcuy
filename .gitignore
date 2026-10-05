@@ -7,3 +7,10 @@ venv/
 *.jpg
 .DS_Store
 _*.py
+# The repo is public, so an accidental "git add -A" here is permanent.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
