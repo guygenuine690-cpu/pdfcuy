@@ -210,15 +210,16 @@ python newflow.py       # 20  the nine newer tools driven through the browser
 python wmflow.py        # 22  watermark logo/tiling and flatten through the browser
 python deploycheck.py   # 19  the Vercel entry point serves the same app and headers
 python vercelcheck.py   # 18  platform config and caps that would fail a build
+python hostcheck.py     # 16  no baked-in host; works under any domain
 python degradecheck.py  # 13  a tool whose backend is absent disappears from the UI
-python countcheck.py    # 21  every count in this table, verified by running them
+python countcheck.py    # 22  every count in this table, verified by running them
 python livecheck.py     #     HTTP smoke test
 python audit.py         #     adversarial sweep, reports findings by severity
 ```
 
-759 checks total. `selfcheck`, `newcheck`, `paritycheck`, `blankcheck`, `seccheck`,
-`namecheck`, `tlscheck`, `seocheck`, `contrast`, `emojicheck`, `deploycheck` and
-`vercelcheck` run without a server; the rest need it running. Browser tests need
+776 checks total. `selfcheck`, `newcheck`, `paritycheck`, `blankcheck`, `seccheck`,
+`namecheck`, `tlscheck`, `seocheck`, `hostcheck`, `contrast`, `emojicheck`, `deploycheck`
+and `vercelcheck` run without a server; the rest need it running. Browser tests need
 `pip install playwright && playwright install chromium`.
 
 `seccheck.py` is the one that matters most: it hides a known string in page text, document
