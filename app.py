@@ -30,7 +30,13 @@ MAX_BYTES = MAX_MB * 1024 * 1024
 # A 1 MB file can hold thousands of pages, so bytes alone do not bound the work.
 # Compressing 3000 pages took 86 seconds of CPU: a handful of such requests is a
 # denial of service that never trips the size limit.
-MAX_PAGES = 1500
+#
+# On a platform that kills the function at 60s the page cap has to be lower than
+# the work that fits in that window, otherwise a request is accepted and then
+# cut off mid-flight: the user waits a minute and gets a gateway error instead
+# of an answer. Refusing up front is the honest failure.
+_PLATFORM_PAGES = 600 if os.environ.get("VERCEL") else 1500
+MAX_PAGES = int(os.environ.get("PDFCUY_MAX_PAGES") or _PLATFORM_PAGES)
 # Merge accepted 400 files in a single request, each one a separate parse.
 MAX_FILES = 50
 STATIC = Path(__file__).parent / "static"

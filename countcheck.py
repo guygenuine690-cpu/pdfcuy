@@ -22,7 +22,7 @@ for m in re.finditer(r"python (\w+)\.py\s+#\s*(\d+)?", block):
     if n:
         claimed[name] = int(n)
 
-SELF = 20  # the number of assertions this file makes, counted in the table
+SELF = 21  # the number of assertions this file makes, counted in the table
 
 stated = int(re.search(r"(\d+) checks total", readme).group(1))
 print(f"README claims {stated} checks across {len(claimed)} counted suites")

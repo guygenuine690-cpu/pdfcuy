@@ -63,11 +63,25 @@ chk("it names an alternative", "PDF to Markdown" in src)
 
 print("\nconfiguration files are consistent")
 vj = json.loads(io.open("vercel.json", encoding="utf-8").read())
-chk("function points at the entry file", "api/index.py" in vj["functions"])
-chk("all paths rewritten to it",
-    vj["rewrites"][0]["destination"] == "/api/index.py")
-chk("python runtime pinned",
-    vj["functions"]["api/index.py"]["runtime"].startswith("python"))
+# The rewrite target has no .py suffix: Vercel addresses the function by route,
+# and "/api/index.py" as a destination 404s.
+chk("rewrite points at the function route",
+    vj["rewrites"][0]["destination"] == "/api/index",
+    vj["rewrites"][0]["destination"])
+chk("all paths rewritten to it", vj["rewrites"][0]["source"] == "/(.*)")
+chk("function entry named", "api/index.py" in vj.get("functions", {}))
+# Hobby caps a function at 60s. Asking for 300 fails the build outright, and
+# "version: 2" is legacy config that disables framework detection.
+chk("duration within the Hobby ceiling",
+    vj["functions"]["api/index.py"]["maxDuration"] <= 60,
+    vj["functions"]["api/index.py"]["maxDuration"])
+chk("no legacy version key", "version" not in vj, vj.get("version"))
+# Memory is 2 GB on Hobby and cannot be raised, so naming a value only risks
+# an invalid one.
+chk("no memory override", "memory" not in vj["functions"]["api/index.py"])
+# Pinning a runtime means pinning a version that eventually goes EOL; Vercel
+# detects Python from requirements.txt on its own.
+chk("no pinned runtime", "runtime" not in vj["functions"]["api/index.py"])
 entry = io.open(os.path.join("api", "index.py"), encoding="utf-8").read()
 chk("entry adds the parent directory to the path", "sys.path.insert" in entry)
 

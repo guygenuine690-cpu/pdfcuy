@@ -208,16 +208,17 @@ python uxcheck.py       # 27  reviewer pass: labels, search intent, keyboard, mo
 python flowcheck.py     # 55  real browser, tool grid to downloaded file
 python newflow.py       # 20  the nine newer tools driven through the browser
 python wmflow.py        # 22  watermark logo/tiling and flatten through the browser
-python deploycheck.py   # 15  the Vercel entry point serves the same app and headers
+python deploycheck.py   # 19  the Vercel entry point serves the same app and headers
+python vercelcheck.py   # 18  platform config and caps that would fail a build
 python degradecheck.py  # 13  a tool whose backend is absent disappears from the UI
-python countcheck.py    # 20  every count in this table, verified by running them
+python countcheck.py    # 21  every count in this table, verified by running them
 python livecheck.py     #     HTTP smoke test
 python audit.py         #     adversarial sweep, reports findings by severity
 ```
 
-736 checks total. `selfcheck`, `newcheck`, `paritycheck`, `blankcheck`, `seccheck`,
-`namecheck`, `tlscheck`, `seocheck`, `contrast`, `emojicheck` and `deploycheck` run without
-a server; the rest need it running. Browser tests need
+759 checks total. `selfcheck`, `newcheck`, `paritycheck`, `blankcheck`, `seccheck`,
+`namecheck`, `tlscheck`, `seocheck`, `contrast`, `emojicheck`, `deploycheck` and
+`vercelcheck` run without a server; the rest need it running. Browser tests need
 `pip install playwright && playwright install chromium`.
 
 `seccheck.py` is the one that matters most: it hides a known string in page text, document
@@ -293,8 +294,9 @@ message, and failures offer *Try again*. Removing the last file restores the emp
 - 100 MB total per request by default. Set `PDFCUY_MAX_MB` to change it; the UI reads the
   real figure from `/api/engines` rather than carrying its own copy, so what is advertised
   and what is enforced cannot drift apart.
-- 1500 pages and 50 files per request. Bytes alone do not bound the work: a 1 MB file can
-  hold thousands of pages, and compressing 3000 of them took 86 seconds of CPU.
+- 1500 pages and 50 files per request, 600 pages on Vercel where the function is killed at
+  60 seconds. Bytes alone do not bound the work: a 1 MB file can hold thousands of pages,
+  and compressing 3000 of them took 86 seconds of CPU. `PDFCUY_MAX_PAGES` overrides it.
 - Scanned PDFs have no text layer, so PDF to Word, Excel, Text, Markdown and Redact have
   nothing to work with. They say so rather than returning an empty file. Add Tesseract if
   you need OCR.
@@ -320,6 +322,11 @@ before you choose that host.
 ordinary phone scan already exceeds it. Anything larger dies on Vercel's own error page
 before our code runs, so the app advertises 4 MB there rather than a number it cannot
 honour. Override with `PDFCUY_MAX_MB` only if you know the platform allows more.
+
+**Functions are killed at 60 seconds on Hobby.** A page cap the function cannot finish is a
+request that gets accepted and then cut off, so the 1500-page limit drops to 600 on Vercel,
+which is roughly 17 seconds of work. `PDFCUY_MAX_PAGES` overrides it. `vercelcheck.py`
+asserts the cap still fits inside `maxDuration`, so the two cannot drift apart.
 
 **PDF to Word is excluded from that bundle.** `pdf2docx` pulls in OpenCV and NumPy, about
 140 MB. `api/requirements.txt` leaves it out, `/api/engines` reports `pdf2docx: false`, and
