@@ -11,7 +11,7 @@ from urllib.parse import quote
 
 import fitz  # PyMuPDF
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Request, Depends
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
@@ -377,6 +377,20 @@ def zip_it(items: list[tuple[str, bytes]]) -> bytes:
 @app.get("/")
 def index():
     return FileResponse(STATIC / "index.html", headers={"Cache-Control": "no-store"})
+
+
+@app.get("/robots.txt", include_in_schema=False)
+def robots():
+    """Let the landing page be found; keep crawlers out of the tool endpoints.
+
+    Without this a crawler gets a 404 and decides for itself. /api/ returns
+    somebody's converted document, which has no business in an index.
+    """
+    return Response(
+        "User-agent: *\nAllow: /$\nDisallow: /api/\n",
+        media_type="text/plain; charset=utf-8",
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 @app.post("/api/info")
@@ -1250,7 +1264,12 @@ async def pdf_to_markdown(
 @app.middleware("http")
 async def no_trace(request, call_next):
     resp = await call_next(request)
-    resp.headers["X-Robots-Tag"] = "noindex"
+    # Tool output must never be indexed: a response here is somebody's document.
+    # The landing page is different, it is public marketing and the whole point
+    # of owning a domain, so it is left indexable. Anything under /api/ is a
+    # user's file coming back out.
+    if request.url.path.startswith("/api/"):
+        resp.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
     resp.headers["Referrer-Policy"] = "no-referrer"
     return resp
 

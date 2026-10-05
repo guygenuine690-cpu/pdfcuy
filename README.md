@@ -198,6 +198,7 @@ python blankcheck.py    # 39  blank form values, capped errors, reverse ranges
 python seccheck.py      # 38  page/file caps, metadata, XMP and attachment stripping
 python namecheck.py     # 39  filename sanitiser and header encoding (no server needed)
 python tlscheck.py      # 15  HSTS follows the connection, posture intact (no server needed)
+python seocheck.py      # 21  page indexable, tool output never, no hardcoded host
 python contrast.py      # 52  WCAG AA across both themes (no server needed)
 python emojicheck.py    # 12  pure-ASCII rule over every byte and the rendered DOM
 python uicheck.py       # 122 assets, tokens, a11y, CSP hygiene, tool parity
@@ -209,14 +210,14 @@ python newflow.py       # 20  the nine newer tools driven through the browser
 python wmflow.py        # 22  watermark logo/tiling and flatten through the browser
 python deploycheck.py   # 15  the Vercel entry point serves the same app and headers
 python degradecheck.py  # 13  a tool whose backend is absent disappears from the UI
-python countcheck.py    # 19  every count in this table, verified by running them
+python countcheck.py    # 20  every count in this table, verified by running them
 python livecheck.py     #     HTTP smoke test
 python audit.py         #     adversarial sweep, reports findings by severity
 ```
 
-714 checks total. `selfcheck`, `newcheck`, `paritycheck`, `blankcheck`, `seccheck`,
-`namecheck`, `tlscheck`, `contrast`, `emojicheck` and `deploycheck` run without a server;
-the rest need it running. Browser tests need
+736 checks total. `selfcheck`, `newcheck`, `paritycheck`, `blankcheck`, `seccheck`,
+`namecheck`, `tlscheck`, `seocheck`, `contrast`, `emojicheck` and `deploycheck` run without
+a server; the rest need it running. Browser tests need
 `pip install playwright && playwright install chromium`.
 
 `seccheck.py` is the one that matters most: it hides a known string in page text, document
@@ -333,3 +334,19 @@ uvicorn app:app --host 0.0.0.0 --port 8000 --workers 4 --no-access-log
 
 Any container host works: Fly.io, Railway, Render, or a VPS. Install LibreOffice alongside
 it and the legacy `.doc`, `.xls` and `.ppt` formats start working too.
+
+### A custom domain
+
+Nothing in the code names a host. There is no absolute `og:url`, no canonical tag and no
+baked-in origin, so moving the site is a DNS change and nothing else. In Vercel: project
+Settings, Domains, add the name, then point DNS at the records it shows.
+
+Two details that matter once the domain is yours:
+
+- The landing page is indexable. `/api/` is not: every response there carries
+  `X-Robots-Tag: noindex, nofollow, noarchive`, and `/robots.txt` disallows it. A converted
+  document is the user's, and it has no business in a search index.
+- HSTS starts sending itself as soon as the domain serves HTTPS, with a two-year `max-age`
+  and `includeSubDomains`. It does **not** claim `preload`. Submitting to the preload list
+  is a near-permanent commitment for every subdomain you will ever have, so that is a
+  decision for you, not a default. `seocheck.py` and `tlscheck.py` hold both of these.
